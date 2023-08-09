@@ -1,5 +1,13 @@
 let express = require("express");
+let mongodb = require("mongodb");
 let app = express();
+let db;
+let connectionString = "";
+mongodb.connect(connectionString, { useNewUrlParser: true }, (err, client) => {
+  db = client.db();
+  app.listen(3000);
+});
+
 app.use(express.urlencoded({ extended: false }));
 
 app.get("/", (req, res) => {
@@ -57,10 +65,11 @@ app.get("/", (req, res) => {
 });
 
 app.post("/create-item", (req, res) => {
-  console.log(req.body.item);
-  res.send("Thanks For Submitting The Form");
+  db.collection("items").insertOne({ text: req.body.item }, () => {
+    res.send("Thanks For Submitting The Form");
+  });
 });
 
-app.listen(3000, () => {
-  console.log("ON PORT 3000");
-});
+// app.listen(3000, () => {
+//   console.log("ON PORT 3000");
+// });
